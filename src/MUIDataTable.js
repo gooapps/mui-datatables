@@ -500,12 +500,19 @@ class MUIDataTable extends React.Component {
       ? data.map(row => {
           let i = -1;
 
-          return columns.map(col => {
+          let cols = columns.map(col => {
             if (!col.empty) i++;
             return col.empty ? undefined : row[i];
           });
+
+          cols.original = row;
+          return cols;
         })
-      : data.map(row => columns.map(col => leaf(row, col.name)));
+      : data.map(row => {
+        let cols = columns.map(col => leaf(row, col.name));
+        cols.original = row;
+        return cols;
+        });
 
     // We need to determine if object data exists in the transformed structure, as this is currently not allowed and will cause errors if not handled by a custom renderer
     const hasInvalidData =
@@ -829,7 +836,6 @@ class MUIDataTable extends React.Component {
 
   getTableMeta = (rowIndex, colIndex, rowData, columnData, tableData, curState) => {
     const { columns, data, displayData, filterData, ...tableState } = curState;
-
     return {
       rowIndex: rowIndex,
       columnIndex: colIndex,
